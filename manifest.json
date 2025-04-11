@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Todo List",
+  "version": "1.0",
+  "description": "一个简单的待办事项管理插件，支持计划事项和每日必做任务",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "image_fx.jpg",
+      "48": "image_fx.jpg",
+      "128": "image_fx.jpg"
+    }
+  },
+  "icons": {
+    "16": "image_fx.jpg",
+    "48": "image_fx.jpg",
+    "128": "image_fx.jpg"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
