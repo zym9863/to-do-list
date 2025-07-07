@@ -24,13 +24,25 @@
                 color: var(--text-light);
             }
             .task-item {
-                background-color: rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(10px);
+                background-color: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(20px);
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+            .task-section {
+                background: rgba(255, 255, 255, 0.03);
+                border-color: rgba(255, 255, 255, 0.08);
             }
             input[type='text'] {
-                background: rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.08);
                 color: var(--text-light);
-                border-color: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+            input[type='text']:focus {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: var(--primary);
+            }
+            .empty-state {
+                color: rgba(245, 246, 250, 0.6);
             }
         }
 
@@ -40,45 +52,135 @@
                 color: var(--text-dark);
             }
             .task-item {
-                background-color: rgba(255, 255, 255, 0.8);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                background-color: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                border-color: rgba(0, 0, 0, 0.05);
+            }
+            .task-section {
+                background: rgba(255, 255, 255, 0.6);
+                border-color: rgba(0, 0, 0, 0.05);
+            }
+            input[type='text'] {
+                background: rgba(255, 255, 255, 0.8);
+                border-color: rgba(0, 0, 0, 0.1);
             }
         }
 
         body {
-            width: 400px;
-            min-height: 500px;
-            padding: 20px;
+            width: 420px;
+            min-height: 520px;
+            padding: 24px;
             font-family: 'Inter', sans-serif;
             transition: all 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--urgent), var(--in-progress), var(--completed));
+            z-index: 10;
         }
 
         .container {
             max-width: 100%;
-            opacity: 0.95;
+            opacity: 0.98;
             transition: opacity 0.3s ease;
+            position: relative;
         }
 
         .container:hover {
             opacity: 1;
         }
 
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 16px 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--urgent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 0.9em;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
         .task-section {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
             position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .task-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
         }
 
         .task-header h2 {
             font-weight: 600;
-            font-size: 1.2em;
+            font-size: 1.3em;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-counter {
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            height: 3px;
+            background: rgba(108, 92, 231, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--completed));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            width: 0%;
         }
 
         .task-list {
@@ -90,91 +192,224 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: grab;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .task-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--regular);
+            border-radius: 0 2px 2px 0;
+            transition: all 0.3s ease;
         }
 
         .task-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-item:active {
+            transform: scale(0.98);
         }
 
         .task-item.completed {
             background-color: rgba(0, 200, 151, 0.1);
             text-decoration: line-through;
             color: var(--completed);
+            opacity: 0.7;
         }
 
-        .task-item.urgent {
-            border-left: 4px solid var(--urgent);
+        .task-item.completed::before {
+            background: var(--completed);
+        }
+
+        .task-item.urgent::before {
+            background: var(--urgent);
+            width: 6px;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+        }
+
+        .task-item.in-progress::before {
+            background: var(--in-progress);
+            width: 5px;
+        }
+
+        .task-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .task-text {
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .task-priority {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
             font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .task-item.in-progress {
-            border-left: 4px solid var(--in-progress);
+        .priority-urgent {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--urgent);
+        }
+
+        .priority-normal {
+            background: rgba(173, 181, 189, 0.2);
+            color: var(--regular);
         }
 
         .task-controls {
             display: flex;
             gap: 8px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .task-item:hover .task-controls {
+            opacity: 1;
         }
 
         .add-task {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .add-task::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C5CE7' stroke-width='2'%3E%3Cpath d='M12 5v14m-7-7h14'/%3E%3C/svg%3E") no-repeat center;
+            background-size: contain;
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         input[type='text'] {
             flex-grow: 1;
-            padding: 10px;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.3s ease;
+            padding: 14px 16px 14px 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         input[type='text']:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input[type='text']::placeholder {
+            opacity: 0.6;
+            font-style: italic;
         }
 
         button {
-            padding: 8px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             color: white;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         button svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        button:hover svg {
+            transform: scale(1.1);
         }
 
         #add-planned-task, #add-daily-task {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #8B7CF6);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
         }
 
         #add-planned-task:hover, #add-daily-task:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
         }
 
         .delete-btn {
-            background-color: var(--urgent);
+            background: linear-gradient(135deg, var(--urgent), #FF8E8E);
+            padding: 8px 12px;
+            font-size: 0.8em;
         }
 
         .complete-btn {
-            background-color: var(--completed);
+            background: linear-gradient(135deg, var(--completed), #4ECDC4);
+            padding: 8px 12px;
+            font-size: 0.8em;
+        }
+
+        .delete-btn:hover, .complete-btn:hover {
+            transform: translateY(-1px) scale(1.05);
         }
 
         .task-timestamp {
@@ -186,28 +421,92 @@
         @keyframes addTaskAnimation {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-30px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes completeTask {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes deleteTask {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8) rotateZ(5deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) rotateZ(10deg);
             }
         }
 
         .task-item.new {
-            animation: addTaskAnimation 0.3s ease-out;
+            animation: addTaskAnimation 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-item.completing {
+            animation: completeTask 0.3s ease;
+        }
+
+        .task-item.deleting {
+            animation: deleteTask 0.4s ease forwards;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.9em;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="header">
+            <h1>✨ Todo List</h1>
+            <p>让每一天都充满效率与成就感</p>
+        </div>
+
         <!-- 计划事项部分 -->
         <div class="task-section">
             <div class="task-header">
-                <h2>📌 计划事项</h2>
+                <h2>
+                    📌 计划事项
+                    <span class="task-counter" id="planned-counter">0</span>
+                </h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="planned-progress"></div>
+                </div>
             </div>
             <div class="add-task">
-                <input type="text" id="planned-task-input" placeholder="添加新的计划事项...">
+                <input type="text" id="planned-task-input" placeholder="添加新的计划事项... (使用 ! 标记紧急任务)">
                 <button id="add-planned-task">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14m-7-7h14"/>
@@ -221,10 +520,16 @@
         <!-- 每日必做部分 -->
         <div class="task-section">
             <div class="task-header">
-                <h2>🔄 每日必做</h2>
+                <h2>
+                    🔄 每日必做
+                    <span class="task-counter" id="daily-counter">0</span>
+                </h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="daily-progress"></div>
+                </div>
             </div>
             <div class="add-task">
-                <input type="text" id="daily-task-input" placeholder="添加新的每日任务...">
+                <input type="text" id="daily-task-input" placeholder="添加新的每日任务... (使用 ! 标记紧急任务)">
                 <button id="add-daily-task">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14m-7-7h14"/>
