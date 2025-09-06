@@ -11,6 +11,7 @@ const dailyTasksList = document.getElementById('daily-tasks');
 // 加载保存的任务
 document.addEventListener('DOMContentLoaded', () => {
     loadTasks();
+    setupDragAndDrop();
 });
 
 // 添加事件监听器
@@ -171,13 +172,51 @@ function createTaskElement(task, type) {
     
     // 添加拖拽功能
     li.draggable = true;
+    li.dataset.taskId = task.id;
+    li.dataset.taskType = type;
+    
     li.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', task.id);
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            id: task.id,
+            type: type
+        }));
         li.classList.add('dragging');
     });
     
     li.addEventListener('dragend', () => {
         li.classList.remove('dragging');
+        // 清除所有拖拽相关的样式
+        document.querySelectorAll('.drag-over').forEach(el => {
+            el.classList.remove('drag-over');
+        });
+    });
+    
+    li.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingElement = document.querySelector('.dragging');
+        if (draggingElement && draggingElement !== li) {
+            li.classList.add('drag-over');
+        }
+    });
+    
+    li.addEventListener('dragleave', (e) => {
+        if (!li.contains(e.relatedTarget)) {
+            li.classList.remove('drag-over');
+        }
+    });
+    
+    li.addEventListener('drop', (e) => {
+        e.preventDefault();
+        li.classList.remove('drag-over');
+        
+        const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const draggedTaskId = dragData.id;
+        const draggedTaskType = dragData.type;
+        
+        // 只允许在同一类型的任务列表中拖拽排序
+        if (draggedTaskType === type && draggedTaskId !== task.id) {
+            reorderTasks(draggedTaskId, task.id, type);
+        }
     });
     
     // 移除new类名以结束动画
@@ -278,4 +317,56 @@ function isSameDay(date1, date2) {
     return date1.getFullYear() === date2.getFullYear() &&
            date1.getMonth() === date2.getMonth() &&
            date1.getDate() === date2.getDate();
+}
+
+// 设置拖拽功能
+function setupDragAndDrop() {
+    const plannedTasksList = document.getElementById('planned-tasks');
+    const dailyTasksList = document.getElementById('daily-tasks');
+    
+    [plannedTasksList, dailyTasksList].forEach(taskList => {
+        taskList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingElement = document.querySelector('.dragging');
+            if (draggingElement) {
+                taskList.classList.add('drag-over');
+            }
+        });
+        
+        taskList.addEventListener('dragleave', (e) => {
+            if (!taskList.contains(e.relatedTarget)) {
+                taskList.classList.remove('drag-over');
+            }
+        });
+        
+        taskList.addEventListener('drop', (e) => {
+            e.preventDefault();
+            taskList.classList.remove('drag-over');
+        });
+    });
+}
+
+// 重新排序任务
+function reorderTasks(draggedTaskId, targetTaskId, type) {
+    const tasks = type === 'planned' ? plannedTasks : dailyTasks;
+    
+    const draggedIndex = tasks.findIndex(task => task.id === parseInt(draggedTaskId));
+    const targetIndex = tasks.findIndex(task => task.id === parseInt(targetTaskId));
+    
+    if (draggedIndex !== -1 && targetIndex !== -1) {
+        // 移除被拖拽的任务
+        const [draggedTask] = tasks.splice(draggedIndex, 1);
+        // 插入到目标位置
+        tasks.splice(targetIndex, 0, draggedTask);
+        
+        // 更新对应的任务数组
+        if (type === 'planned') {
+            plannedTasks = tasks;
+        } else {
+            dailyTasks = tasks;
+        }
+        
+        saveTasks();
+        renderTasks();
+    }
 }
