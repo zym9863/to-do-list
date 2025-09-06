@@ -222,6 +222,23 @@
             transform: scale(0.98);
         }
 
+        .task-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg) scale(0.95);
+            z-index: 1000;
+        }
+
+        .task-list.drag-over {
+            background-color: rgba(108, 92, 231, 0.1);
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+        }
+
+        .task-item.drag-over {
+            border-top: 3px solid var(--primary);
+            transform: translateY(-2px);
+        }
+
         .task-item.completed {
             background-color: rgba(0, 200, 151, 0.1);
             text-decoration: line-through;
